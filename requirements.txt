@@ -1,0 +1,16 @@
+# Core JAX — GPU build (CUDA 12)
+# CPU-only alternative: pip install jax jaxlib
+jax[cuda12]==0.6.2
+
+# AST instrumentation (LibCST-based code injection)
+libcst==1.8.6
+
+# Bayesian optimisation (TPE sampler used by AutoSamplerAgent)
+optuna==4.8.0
+
+# Numerics
+numpy==1.26.4
+scipy==1.15.3
+
+# Visualisation
+matplotlib==3.10.8

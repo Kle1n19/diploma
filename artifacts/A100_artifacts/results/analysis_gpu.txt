@@ -1,0 +1,106 @@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BASELINE  (unoptimized)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [1] Dispatch stack
+  Layer                                                        n    avg_ms
+  ───────────────────────────────────────────────────────────────────────
+  PjRtCApiLoadedExecutable::Execute                            3    11.857
+  PJRT_LoadedExecutable_Execute                                3    11.845
+  CommonPjRtLoadedExecutable::ExecuteHelperOnSingleDevice      3    11.836
+  [0] PjRtStreamExecutorRawLoadedExecutable::Execute           3    11.813
+  [0] GpuExecutable::ExecuteThunks                             3    11.747
+
+  [2] XLA fused kernels
+  Kernel name                                    calls    avg_ms    total_ms
+  ───────────────────────────────────────────────────────────────────────
+  loop_multiply_fusion                            2268    0.0056     12.8071
+  loop_slice_fusion                               2268    0.0056     12.8000
+  loop_add_fusion                                 2268    0.0056     12.7482
+  loop_dynamic_update_slice_fusion                 756    0.0102      7.7184
+  loop_broadcast_fusion                              9    0.0133      0.1195
+  wrapped_transpose                                  9    0.0078      0.0706
+  loop_transpose_fusion                              9    0.0063      0.0564
+  wrapped_transpose_1                                6    0.0051      0.0307
+  loop_broadcast_fusion_1                            6    0.0051      0.0306
+  loop_broadcast_fusion.1                            3    0.0098      0.0295
+  wrapped_transpose.1                                3    0.0095      0.0285
+
+  [3] While-loop body kernels (lax.scan → XLA WhileOp)
+  while.7                                            3   11.5207     34.5620
+
+  [4] Memory transfers / buffer ops
+  BUFFER_FLUSH                                      20    0.0168      0.3364
+  copy.18                                            3    0.1379      0.4137
+  MemcpyD2D                                       3030    0.0052     15.7089
+
+  [5] Run-to-run jitter (XLA GPU module, 3 runs)
+       run 1: 11.5718 ms
+       run 2: 11.5921 ms
+       run 3: 12.0777 ms
+       std dev : 0.2338 ms  (2.0% CV)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TUNED     (optimized)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [1] Dispatch stack
+  Layer                                                        n    avg_ms
+  ───────────────────────────────────────────────────────────────────────
+  PjRtCApiLoadedExecutable::Execute                            3     0.757
+  PJRT_LoadedExecutable_Execute                                3     0.747
+  CommonPjRtLoadedExecutable::ExecuteHelperOnSingleDevice      3     0.740
+  [0] PjRtStreamExecutorRawLoadedExecutable::Execute           3     0.724
+  [0] GpuExecutable::ExecuteThunks                             3     0.682
+
+  [2] XLA fused kernels
+  Kernel name                                    calls    avg_ms    total_ms
+  ───────────────────────────────────────────────────────────────────────
+  command_buffer_7                                  45    0.0346      1.5569
+  command_buffer::execute                           48    0.0308      1.4787
+  loop_slice_fusion_3                              564    0.0024      1.3757
+  cuGraphLaunch (CudaGraph:5)                       45    0.0288      1.2941
+  loop_multiply_fusion                              45    0.0079      0.3569
+  command_buffer::update                             6    0.0389      0.2333
+  loop_slice_fusion                                 93    0.0025      0.2289
+  command_buffer_26                                  3    0.0666      0.1999
+  loop_dynamic_update_slice_fusion                  45    0.0044      0.1993
+  loop_slice_fusion_2                               48    0.0029      0.1401
+  loop_slice_fusion_15                              48    0.0025      0.1220
+  cuGraphLaunch (CudaGraph:8)                        3    0.0298      0.0893
+  loop_concatenate_fusion                            3    0.0287      0.0862
+  loop_add_fusion                                   45    0.0019      0.0851
+  loop_broadcast_fusion                              9    0.0089      0.0801
+  wrapped_transpose                                  9    0.0047      0.0426
+  loop_broadcast_fusion_1                            6    0.0037      0.0222
+  loop_multiply_fusion_1                             3    0.0064      0.0193
+  loop_broadcast_fusion.1                            3    0.0062      0.0186
+  wrapped_transpose_1                                3    0.0033      0.0100
+  loop_slice_fusion_17                               3    0.0031      0.0092
+
+  [3] While-loop body kernels (lax.scan → XLA WhileOp)
+  while.7                                            3    0.5271      1.5814
+
+  [4] Memory transfers / buffer ops
+  BUFFER_FLUSH                                       6    0.0198      0.1190
+  MemcpyD2D                                          6    0.0141      0.0846
+
+  [5] Run-to-run jitter (XLA GPU module, 3 runs)
+       run 1: 0.7845 ms
+       run 2: 0.6240 ms
+       run 3: 0.6360 ms
+       std dev : 0.0730 ms  (10.7% CV)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THESIS SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Metric                                 Baseline          Tuned             Note
+  ────────────────────────────────────────────────────────────────────────────
+  XLA GPU module avg time               11.747 ms       0.682 ms    17.24x faster
+  Run-to-run std dev                    0.2338 ms      0.0730 ms                 
+  Fused kernel invocations                   7605           1077                 
+  While-loop body calls                         3              3                 
+  Memory transfer ops                        3053             12                 
+  Dispatch overhead                          0.0%           0.0%                 

@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-04-28T16:15:47.021817",
+  "budget": 1000,
+  "n_steps": 252,
+  "batch_size": 512,
+  "backend": "gpu",
+  "results": [
+    {
+      "domain": "American Option",
+      "family": "MC",
+      "baseline_ms": 1.753,
+      "tuned_ms": 0.959,
+      "saved_ms": 0.793,
+      "speedup": 1.8267,
+      "tuning_time_s": 141.82,
+      "break_even_runs": 178793.2,
+      "hours_saved_1k": 0.0002,
+      "n_configs": 36000
+    },
+    {
+      "domain": "European Option",
+      "family": "MC",
+      "baseline_ms": 1.949,
+      "tuned_ms": 0.978,
+      "saved_ms": 0.971,
+      "speedup": 1.9922,
+      "tuning_time_s": 142.69,
+      "break_even_runs": 146976.2,
+      "hours_saved_1k": 0.0003,
+      "n_configs": 36000
+    },
+    {
+      "domain": "Basket Option",
+      "family": "MC",
+      "baseline_ms": 3.5,
+      "tuned_ms": 1.483,
+      "saved_ms": 2.016,
+      "speedup": 2.3592,
+      "tuning_time_s": 154.52,
+      "break_even_runs": 76636.5,
+      "hours_saved_1k": 0.0006,
+      "n_configs": 36000
+    },
+    {
+      "domain": "Runge-Kutta ODE",
+      "family": "Non-MC",
+      "baseline_ms": 2.259,
+      "tuned_ms": 1.43,
+      "saved_ms": 0.829,
+      "speedup": 1.5795,
+      "tuning_time_s": 38.33,
+      "break_even_runs": 46231.7,
+      "hours_saved_1k": 0.0002,
+      "n_configs": 36000
+    },
+    {
+      "domain": "Kalman Smoother",
+      "family": "Non-MC",
+      "baseline_ms": 44.786,
+      "tuned_ms": 36.012,
+      "saved_ms": 8.773,
+      "speedup": 1.2436,
+      "tuning_time_s": 228.07,
+      "break_even_runs": 25995.3,
+      "hours_saved_1k": 0.0024,
+      "n_configs": 36000
+    }
+  ]
+}

@@ -207,8 +207,8 @@ Results are saved to `experiments/<name>/results/results.json` and figures to `e
 After running an experiment, you can compare XLA traces for the baseline and best-found configuration:
 
 ```bash
-python "trace_utils/get_trace.py"      # emits traces to ./traces/baseline and ./traces/tuned
-python "trace_utils/analyze_traces.py" # diff and summarise the two profiles
+python trace_utils/get_trace.py      # emits traces to ./traces/baseline and ./traces/tuned
+python trace_utils/analyze_traces.py # diff and summarise the two profiles
 ```
 
 `get_trace.py` reads the best result from `experiments/convergence_speed/results/results.json`, deserialises the parameter set, and calls `tuner.trace()` for both the default and tuned configs.

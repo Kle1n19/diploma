@@ -1,0 +1,104 @@
+  BASELINE (unoptimized)
+
+  [1] Dispatch stack
+ Layer                                                        n    avg_ms
+ PjitFunction(run_simulation)                                 6     0.081
+ PJRT_LoadedExecutable_Execute                                3     0.043
+ TpuLoadedExecutable::Execute                                 6     0.041
+ TpuLoadedExecutable::ExecuteHelperOnSingleDevice             3     0.040
+ TpuLoadedExecutable::ExecuteLaunch                           3     0.020
+ tpu::System::Execute                                         3     0.016
+
+ [2] XLA fused kernels
+ Kernel name                                    calls    avg_ms    total_ms
+ while.2                                            3    0.1063      0.3190
+ select_multiply_fusion.2                         756    0.0002      0.1361
+ add_add_fusion.10                                756    0.0001      0.0781
+ pad_add_fusion.2                                 756    0.0000      0.0141
+ fusion.26                                        756    0.0000      0.0091
+ fusion.27                                        756    0.0000      0.0086
+ copy_bitcast_fusion.4                            756    0.0000      0.0055
+ copy_bitcast_fusion.5                            756    0.0000      0.0030
+
+ [3] While-loop body kernels (lax.scan → XLA WhileOp)
+ while.2                                            3    0.1063     0.3190
+
+ [4] Memory transfers / buffer ops
+ AllocateOutputBufferWithInputReuse                 3    0.0155      0.0465
+ copy-start.2                                       3    0.0000      0.0000
+ copy-done.2                                        3    0.0003      0.0009
+ copy-start                                         3    0.0000      0.0000
+ copy-start.1                                       3    0.0000      0.0000
+ copy.4                                             3    0.0013      0.0039
+ copy-done                                          3    0.0000      0.0000
+ copy-done.1                                        3    0.0000      0.0000
+
+ [5] Run-to-run jitter (XLA TPU module, 3 runs)
+ run 1: 0.1082 ms
+ run 2: 0.1082 ms
+ run 3: 0.1082 ms
+ std dev : 0.0000 ms  (0.0% CV)
+
+  [6] Dispatch overhead breakdown
+ Total call time (PjitFunction, top-3) : 0.093 ms
+ Actual XLA time (XLA TPU module): 0.108 ms
+ Python/JAX dispatch overhead: -0.016 ms  (0.0%)
+  TUNED (optimized)
+
+  [1] Dispatch stack
+ Layer                                                        n    avg_ms
+ PjitFunction(run_simulation)                                 6     0.090
+ PJRT_LoadedExecutable_Execute                                3     0.051
+ TpuLoadedExecutable::Execute                                 6     0.049
+ TpuLoadedExecutable::ExecuteHelperOnSingleDevice             3     0.047
+ TpuLoadedExecutable::ExecuteLaunch                           3     0.024
+ tpu::System::Execute                                         3     0.019
+
+ [2] XLA fused kernels
+ Kernel name                                    calls    avg_ms    total_ms
+ while.2                                            3    0.0669      0.2006
+ add_add_fusion.19                                378    0.0001      0.0391
+ fusion.42                                        378    0.0000      0.0091
+ pad_add_fusion.3                                 378    0.0000      0.0071
+ fusion.38                                        378    0.0000      0.0066
+ fusion.39                                        378    0.0000      0.0053
+ fusion.37                                        378    0.0000      0.0045
+ fusion.41                                        378    0.0000      0.0043
+ fusion.40                                        378    0.0000      0.0043
+ copy_bitcast_fusion.8                            378    0.0000      0.0028
+ copy_bitcast_fusion.9                            378    0.0000      0.0028
+ copy_bitcast_fusion.11                           378    0.0000      0.0015
+ copy_bitcast_fusion.10                           378    0.0000      0.0015
+
+ [3] While-loop body kernels (lax.scan → XLA WhileOp)
+ while.2                                            3    0.0669     0.2006
+
+ [4] Memory transfers / buffer ops
+ AllocateOutputBufferWithInputReuse                 3    0.0171      0.0514
+ copy-start.2                                       3    0.0000      0.0000
+ copy-done.2                                        3    0.0003      0.0009
+ copy-start                                         3    0.0000      0.0000
+ copy-start.1                                       3    0.0000      0.0000
+ copy-done                                          3    0.0000      0.0000
+ copy-done.1                                        3    0.0000      0.0000
+ copy.2                                             3    0.0013      0.0038
+
+ [5] Run-to-run jitter (XLA TPU module, 3 runs)
+ run 1: 0.0695 ms
+ run 2: 0.0694 ms
+ run 3: 0.0694 ms
+ std dev : 0.0000 ms  (0.0% CV)
+
+  [6] Dispatch overhead breakdown
+ Total call time (PjitFunction, top-3) : 0.098 ms
+ Actual XLA time (XLA TPU module): 0.069 ms
+ Python/JAX dispatch overhead: 0.029 ms  (29.5%)
+  THESIS SUMMARY
+
+ Metric                                 Baseline          Tuned             Note
+ XLA TPU module avg time                0.108 ms       0.069 ms     1.56x faster
+ Run-to-run std dev                    0.0000 ms      0.0000 ms                 
+ Fused kernel invocations                   5295           4539                 
+ While-loop body calls                         3              3                 
+ Memory transfer ops                          24             24                 
+ Dispatch overhead                          0.0%          29.5%                 
